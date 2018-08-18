@@ -52,10 +52,28 @@ function archroot {
 	br
 	read -r -p "Enter the username: " uname
 	read -r -p "Enter the hostname: " hname
-	arch-chroot /mnt bash -c "ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && hwclock --systohc && nano /etc/locale.gen && locale-gen && echo 'LANG=en_US.UTF-8' > /etc/locale.conf && echo $hname > /etc/hostname && echo 127.0.0.1	$hname >> /etc/hosts && echo ::1	$hname >> /etc/hosts && echo 127.0.1.1	$hname.localdomain	$hname >> /etc/hosts && passwd && useradd --create-home $uname && passwd $uname && groupadd sudo && gpasswd -a $uname sudo && EDITOR=vim visudo && pacman -S gnome gnome-tweaks papirus-icon-theme vlc ttf-hack && systemctl enable gdm NetworkManager bluetooth && vim /etc/pacman.conf && pacman -Syu && sleep 1 && vim /etc/gdm/custom.conf && grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Arch && grub-mkconfig -o /boot/grub/grub.cfg && exit"
+
+	echo -e "Setting up Region and Language\n"
+	arch-chroot /mnt bash -c "ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && hwclock --systohc && sed -i 's/#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen && locale-gen && echo 'LANG=en_US.UTF-8' > /etc/locale.conf && exit"
+	
+	echo -e "Setting up Hostname\n"
+	arch-chroot /mnt bash -c "echo $hname > /etc/hostname && echo 127.0.0.1	$hname >> /etc/hosts && echo ::1	$hname >> /etc/hosts && echo 127.0.1.1	$hname.localdomain	$hname >> /etc/hosts && exit"
+	
+	echo "Set Root password"
+	arch-chroot /mnt bash -c "passwd && useradd --create-home $uname && echo 'set user password' && passwd $uname && groupadd sudo && gpasswd -a $uname sudo && EDITOR=vim visudo && exit"
+	
+	echo -e "Installing Gnome and enabling services...\n"
+	arch-chroot /mnt bash -c "pacman -S gnome gnome-tweaks papirus-icon-theme vlc ttf-hack && systemctl enable gdm NetworkManager bluetooth && exit"
+	
+	echo -e "Editing configuration files...\n"
+	arch-chroot /mnt bash -c "sed -i '93s/#\[/\[/' /etc/pacman.conf && sed -i '94s/#I/I/' && pacman -Syu && sleep 1 && sed -i 's/#W/W/' /etc/gdm/custom.conf && exit"
+	
+	echo -e "Installing GRUB.."
+	arch-chroot /mnt bash -c "grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Arch && grub-mkconfig -o /boot/grub/grub.cfg && exit"
 }
 
 function browser {
+	br
 	read -r -p "Install firefox? [y/N] " ff
 	case "$ff" in
 	    [yY][eE][sS]|[yY])
