@@ -44,8 +44,41 @@ function base {
 	br
 	echo "Starting installation of packages in selected root drive..."
 	sleep 1
-	pacstrap /mnt base base-devel networkmanager sudo bash-completion git vim exfat-utils ntfs-3g grub os-prober efibootmgr htop
+	pacstrap /mnt base base-devel networkmanager sudo bash-completion git vim exfat-utils ntfs-3g grub os-prober efibootmgr htop vlc ttf-hack
 	genfstab -U /mnt >> /etc/fstab
+}
+
+function install-gnome {
+	arch-chroot /mnt bash -c "pacman -S gnome gnome-tweaks papirus-icon-theme && systemctl enable gdm && exit"
+	arch-chroot /mnt bash -c "sed -i 's/#W/W/' /etc/gdm/custom.conf && exit"
+}
+
+function install-deepin {
+	arch-chroot /mnt bash -c "pacman -S deepin gedit && systemctl enable lightdm && exit"
+}
+
+function install-gnome {
+	arch-chroot /mnt bash -c "pacman -S xorg && exit"
+	arch-chroot /mnt bash -c "pacman -S plasma kde-applications sddm && systemctl enable sddm && exit"
+}
+
+function de {
+	br
+	echo -e "Choose a Desktop Environment to install: \n"
+	echo -e "1. GNOME \n2. Deepin \n3. KDE \n4. None"
+	read -r -p "DE: " desktope
+	case "$desktope" in
+		1)
+			install-gnome
+			;;
+		2)
+			install-deepin
+			;;
+		3)
+			install-kde
+			;;
+		*)
+			;;
 }
 
 function archroot {
@@ -62,11 +95,13 @@ function archroot {
 	echo "Set Root password"
 	arch-chroot /mnt bash -c "passwd && useradd --create-home $uname && echo 'set user password' && passwd $uname && groupadd sudo && gpasswd -a $uname sudo && EDITOR=vim visudo && exit"
 	
-	echo -e "Installing Gnome and enabling services...\n"
-	arch-chroot /mnt bash -c "pacman -S gnome gnome-tweaks papirus-icon-theme vlc ttf-hack && systemctl enable gdm NetworkManager bluetooth && exit"
+	de 
+
+	echo -e "enabling services...\n"
+	arch-chroot /mnt bash -c "systemctl enable NetworkManager bluetooth && exit"
 	
 	echo -e "Editing configuration files...\n"
-	arch-chroot /mnt bash -c "sed -i '93s/#\[/\[/' /etc/pacman.conf && sed -i '94s/#I/I/' && pacman -Syu && sleep 1 && sed -i 's/#W/W/' /etc/gdm/custom.conf && exit"
+	arch-chroot /mnt bash -c "sed -i '93s/#\[/\[/' /etc/pacman.conf && sed -i '94s/#I/I/' && pacman -Syu && sleep 1 && exit"
 	
 	echo -e "Installing GRUB.."
 	arch-chroot /mnt bash -c "grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Arch && grub-mkconfig -o /boot/grub/grub.cfg && exit"
