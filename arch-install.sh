@@ -41,7 +41,7 @@ function base {
 function archroot {
 	read -r -p "Enter the username: " uname
 	read -r -p "Enter the hostname: " hname
-	arch-chroot /mnt bash -c "ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && hwclock --systohc && nano /etc/locale.gen && locale-gen && echo 'LANG=en_US.UTF-8' > /etc/locale.conf && echo $hname > /etc/hostname && echo 127.0.0.1	$hname >> /etc/hosts && echo ::1	$hname >> /etc/hosts && echo 127.0.1.1	$hname.localdomain	$hname >> /etc/hosts && passwd && useradd --create-home $uname && passwd $uname && groupadd sudo && gpasswd -a $uname sudo && EDITOR=vim visudo && pacman -S gnome gnome-tweaks papirus-icon-theme ttf-hack && systemctl enable gdm NetworkManager bluetooth && vim /etc/pacman.conf && pacman -Syu && sleep 1 && vim /etc/gdm/custom.conf && grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Arch && grub-mkconfig -o /boot/grub/grub.cfg && exit"
+	arch-chroot /mnt bash -c "ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && hwclock --systohc && nano /etc/locale.gen && locale-gen && echo 'LANG=en_US.UTF-8' > /etc/locale.conf && echo $hname > /etc/hostname && echo 127.0.0.1	$hname >> /etc/hosts && echo ::1	$hname >> /etc/hosts && echo 127.0.1.1	$hname.localdomain	$hname >> /etc/hosts && passwd && useradd --create-home $uname && passwd $uname && groupadd sudo && gpasswd -a $uname sudo && EDITOR=vim visudo && pacman -S gnome gnome-tweaks papirus-icon-theme vlc ttf-hack && systemctl enable gdm NetworkManager bluetooth && vim /etc/pacman.conf && pacman -Syu && sleep 1 && vim /etc/gdm/custom.conf && grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Arch && grub-mkconfig -o /boot/grub/grub.cfg && exit"
 }
 
 function browser {
