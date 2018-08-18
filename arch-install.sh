@@ -1,10 +1,16 @@
 #!/bin/bash
 
 function set-time {
+	echo "Setting time...."
 	timedatectl set-local-rtc 1 --adjust-system-clock
 }
 
+function br {
+	for ((i=1; i<=`tput cols`; i++)); do echo -n -; done
+}
+
 function partion {
+	br
 	read -r -p "Do you want to do partioning? [y/N] " resp
 	case "$resp" in
 	    [yY][eE][sS]|[yY])
@@ -17,8 +23,9 @@ function partion {
 }
 
 function mounting {
+	br
 	read -r -p "which is your root partition? " rootp
-	mkfs.ext4 $rootp
+	mkfs.ext4 $rootp 
 	mount $rootp /mnt
 	mkdir /mnt/boot
 	read -r -p "which is your boot partition? " bootp
@@ -34,11 +41,15 @@ function mounting {
 }
 
 function base {
+	br
+	echo "Starting installation of packages in selected root drive..."
+	sleep 1
 	pacstrap /mnt base base-devel networkmanager sudo bash-completion git vim exfat-utils ntfs-3g grub os-prober efibootmgr htop
 	genfstab -U /mnt >> /etc/fstab
 }
 
 function archroot {
+	br
 	read -r -p "Enter the username: " uname
 	read -r -p "Enter the hostname: " hname
 	arch-chroot /mnt bash -c "ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && hwclock --systohc && nano /etc/locale.gen && locale-gen && echo 'LANG=en_US.UTF-8' > /etc/locale.conf && echo $hname > /etc/hostname && echo 127.0.0.1	$hname >> /etc/hosts && echo ::1	$hname >> /etc/hosts && echo 127.0.1.1	$hname.localdomain	$hname >> /etc/hosts && passwd && useradd --create-home $uname && passwd $uname && groupadd sudo && gpasswd -a $uname sudo && EDITOR=vim visudo && pacman -S gnome gnome-tweaks papirus-icon-theme vlc ttf-hack && systemctl enable gdm NetworkManager bluetooth && vim /etc/pacman.conf && pacman -Syu && sleep 1 && vim /etc/gdm/custom.conf && grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Arch && grub-mkconfig -o /boot/grub/grub.cfg && exit"
@@ -64,6 +75,7 @@ function browser {
 }
 
 function graphics {
+	br
 	read -r -p "Do you want proprietary nvidia drivers? " graphic
 	case "$graphic" in
 	    [yY][eE][sS]|[yY]) 
@@ -75,6 +87,7 @@ function graphics {
 }
 
 function installsteam {
+	br
 	read -r -p "Do you want to install steam? " isteam
 	case "$isteam" in
 	    [yY][eE][sS]|[yY])
@@ -86,6 +99,7 @@ function installsteam {
 }
 
 function additional {
+	br
 	read -r -p "Do you want to install fun stuff? " funyes
 	case "$funyes" in
 	    [yY][eE][sS]|[yY])
