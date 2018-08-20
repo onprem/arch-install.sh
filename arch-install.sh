@@ -2,10 +2,12 @@
 
 function set-time {
 	echo "Setting time...."
+	# This command fixes different time reporting when dual booting with windows.
 	timedatectl set-local-rtc 1 --adjust-system-clock
 }
 
 function br {
+	# Just output a bunch of crap, but it looks cool so..
 	for ((i=1; i<=`tput cols`; i++)); do echo -n -; done
 }
 
@@ -15,6 +17,7 @@ function partion {
 	case "$resp" in
 	    [yY][eE][sS]|[yY])
 		read -r -p "which drive you want to partition? " drive
+			# Using gdisk for GPT, if you want to use MBR replace it with fdisk
 	        gdisk $drive
 	        ;;
 	    *)
@@ -50,6 +53,7 @@ function base {
 
 function install-gnome {
 	arch-chroot /mnt bash -c "pacman -S gnome gnome-tweaks papirus-icon-theme && systemctl enable gdm && exit"
+	# Editing gdm's config for disabling Wayland as it does not play nicely with Nvidia
 	arch-chroot /mnt bash -c "sed -i 's/#W/W/' /etc/gdm/custom.conf && exit"
 }
 
@@ -82,6 +86,18 @@ function de {
 	esac
 }
 
+function installgrub {
+	read -r -p "Install GRUB bootloader? [y/N] " igrub
+	case "$igrub" in
+		[yY][eE][sS]|[yY])
+	        echo -e "Installing GRUB.."
+			arch-chroot /mnt bash -c "grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Arch && grub-mkconfig -o /boot/grub/grub.cfg && exit"
+	        ;;
+	    *)
+	        ;;
+	esac
+}
+
 function archroot {
 	br
 	read -r -p "Enter the username: " uname
@@ -91,7 +107,7 @@ function archroot {
 	arch-chroot /mnt bash -c "ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && hwclock --systohc && sed -i 's/#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen && locale-gen && echo 'LANG=en_US.UTF-8' > /etc/locale.conf && exit"
 	
 	echo -e "Setting up Hostname\n"
-	arch-chroot /mnt bash -c "echo $hname > /etc/hostname && echo 127.0.0.1	$hname >> /etc/hosts && echo ::1	$hname >> /etc/hosts && echo 127.0.1.1	$hname.localdomain	$hname >> /etc/hosts && exit"
+	arch-chroot /mnt bash -c "echo $hname > /etc/hostname && echo 127.0.0.1	$hname > /etc/hosts && echo ::1	$hname >> /etc/hosts && echo 127.0.1.1	$hname.localdomain	$hname >> /etc/hosts && exit"
 	
 	echo "Set Root password"
 	arch-chroot /mnt bash -c "passwd && useradd --create-home $uname && echo 'set user password' && passwd $uname && groupadd sudo && gpasswd -a $uname sudo && EDITOR=vim visudo && exit"
@@ -102,10 +118,10 @@ function archroot {
 	arch-chroot /mnt bash -c "systemctl enable NetworkManager bluetooth && exit"
 	
 	echo -e "Editing configuration files...\n"
-	arch-chroot /mnt bash -c "sed -i '93s/#\[/\[/' /etc/pacman.conf && sed -i '94s/#I/I/' && pacman -Syu && sleep 1 && exit"
+	# Enabling multilib in pacman
+	arch-chroot /mnt bash -c "sed -i '93s/#\[/\[/' /etc/pacman.conf && sed -i '94s/#I/I/' /etc/pacman.conf && pacman -Syu && sleep 1 && exit"
 	
-	echo -e "Installing GRUB.."
-	arch-chroot /mnt bash -c "grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Arch && grub-mkconfig -o /boot/grub/grub.cfg && exit"
+	
 }
 
 function browser {
@@ -154,7 +170,7 @@ function installsteam {
 
 function additional {
 	br
-	read -r -p "Do you want to install fun stuff? " funyes
+	read -r -p "Do you want to install fun stuff? " funyes #because why not
 	case "$funyes" in
 	    [yY][eE][sS]|[yY])
 	        arch-chroot /mnt bash -c "pacman -S sl neofetch lolcat cmatrix && exit"
