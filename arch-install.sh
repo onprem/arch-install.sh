@@ -66,7 +66,7 @@ function base {
 	echo "Starting installation of packages in selected root drive..."
 	sleep 1
 	pacstrap /mnt base base-devel networkmanager sudo bash-completion git vim exfat-utils ntfs-3g grub os-prober efibootmgr htop vlc ttf-hack
-	genfstab -U /mnt >> /etc/fstab
+	genfstab -U /mnt >> /mnt/etc/fstab
 }
 
 function install-gnome {
@@ -79,7 +79,7 @@ function install-deepin {
 	arch-chroot /mnt bash -c "pacman -S deepin gedit && systemctl enable lightdm && exit"
 }
 
-function install-gnome {
+function install-kde {
 	arch-chroot /mnt bash -c "pacman -S xorg && exit"
 	arch-chroot /mnt bash -c "pacman -S plasma kde-applications sddm && systemctl enable sddm && exit"
 }
@@ -204,6 +204,7 @@ function main {
 	mounting
 	base
 	archroot
+	installgrub
 	browser
 	graphics
 	installsteam
