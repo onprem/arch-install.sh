@@ -17,16 +17,27 @@ function ascii {
 	echo	'                                                                                                      '
 		                                                                                                      
 }
-                                                                                                   
+ 
+function br {
+	# Just output a bunch of crap, but it looks cool so..
+	for ((i=1; i<=`tput cols`; i++)); do echo -n -; done
+}
+
+function cont {
+	read -r -p "[SUCCESS] Continue to next step? [Y/n] " contin
+	case $continue in
+		[Nn][oO]|[nN] )
+			exit
+			;;
+		*)
+			;;
+	esac
+}
+
 function set-time {
 	echo "Setting time...."
 	# This command fixes different time reporting when dual booting with windows.
 	timedatectl set-local-rtc 1 --adjust-system-clock
-}
-
-function br {
-	# Just output a bunch of crap, but it looks cool so..
-	for ((i=1; i<=`tput cols`; i++)); do echo -n -; done
 }
 
 function partion {
@@ -34,13 +45,15 @@ function partion {
 	read -r -p "Do you want to do partioning? [y/N] " resp
 	case "$resp" in
 	    [yY][eE][sS]|[yY])
-		read -r -p "which drive you want to partition? " drive
+			echo "gdisk will be used for partioning"
+			read -r -p "which drive you want to partition (exapmle /dev/sda)? " drive
 			# Using gdisk for GPT, if you want to use MBR replace it with fdisk
 	        gdisk $drive
 	        ;;
 	    *)
 	        ;;
 	esac
+	cont
 }
 
 function mounting {
@@ -59,6 +72,24 @@ function mounting {
 	        ;;
 	esac
 	mount $bootp /mnt/boot
+	read -r -p "Do you want to use a seperate home partition? [y/N] " responsehome
+	case "$responsehome" in
+	    [yY][eE][sS]|[yY])
+	        read -r -p "which is your home partition? " homep
+	        read -r -p "Do you want to format your boot partition? [y/N] " rhome
+			case "$rhome" in
+			    [yY][eE][sS]|[yY])
+			        mkfs.fat -F32 $homep
+			        ;;
+			    *)
+			        ;;
+			esac
+			mount $homep /mnt/home
+	        ;;
+	    *)
+	        ;;
+	esac
+	cont
 }
 
 function base {
@@ -67,6 +98,7 @@ function base {
 	sleep 1
 	pacstrap /mnt base base-devel networkmanager sudo bash-completion git vim exfat-utils ntfs-3g grub os-prober efibootmgr htop vlc ttf-hack
 	genfstab -U /mnt >> /mnt/etc/fstab
+	cont
 }
 
 function install-gnome {
@@ -102,6 +134,7 @@ function de {
 		*)
 			;;
 	esac
+	cont
 }
 
 function installgrub {
@@ -114,6 +147,7 @@ function installgrub {
 	    *)
 	        ;;
 	esac
+	cont
 }
 
 function archroot {
@@ -130,8 +164,6 @@ function archroot {
 	echo "Set Root password"
 	arch-chroot /mnt bash -c "passwd && useradd --create-home $uname && echo 'set user password' && passwd $uname && groupadd sudo && gpasswd -a $uname sudo && EDITOR=vim visudo && exit"
 	
-	de 
-
 	echo -e "enabling services...\n"
 	arch-chroot /mnt bash -c "systemctl enable NetworkManager bluetooth && exit"
 	
@@ -139,7 +171,7 @@ function archroot {
 	# Enabling multilib in pacman
 	arch-chroot /mnt bash -c "sed -i '93s/#\[/\[/' /etc/pacman.conf && sed -i '94s/#I/I/' /etc/pacman.conf && pacman -Syu && sleep 1 && exit"
 	
-	
+	cont
 }
 
 function browser {
@@ -160,6 +192,7 @@ function browser {
 	    *)
 	        ;;
 	esac
+	cont
 }
 
 function graphics {
@@ -172,6 +205,7 @@ function graphics {
 	    *)
 	        ;;
 	esac
+	cont
 }
 
 function installsteam {
@@ -184,6 +218,7 @@ function installsteam {
 	    *)
 	        ;;
 	esac
+	cont
 }
 
 function additional {
@@ -204,6 +239,7 @@ function full-installation {
 	mounting
 	base
 	archroot
+	de
 	installgrub
 	browser
 	graphics
@@ -219,14 +255,15 @@ function step-installation {
 	echo "3. mounting"
 	echo "4. base installation"
 	echo "5. archroot"
-	echo "6. installing grub"
-	echo "7. installing browsers"
-	echo "8. graphics drivers"
-	echo "9. installing steam"
-	echo "10. additional stuff"
+	echo "6. installing a Desktop Environment"
+	echo "7. installing grub"
+	echo "8. installing browsers"
+	echo "9. graphics drivers"
+	echo "10. installing steam"
+	echo "11. additional stuff"
 	read -r -p "Enter the number of step : " stepno
 
-	array=(set-time partion mounting base archroot installgrub browser graphics installsteam additional)
+	array=(set-time partion mounting base archroot de installgrub browser graphics installsteam additional)
 	#array=(ascii ascii ascii)
 	stepno=$[$stepno-1]
 	while [ $stepno -lt ${#array[*]} ]
@@ -251,11 +288,11 @@ function main {
 }
 
 ascii
-read -r -p "Start Installation? [y/n] " starti
+read -r -p "Start Installation? [Y/n] " starti
 case "$starti" in
-	    [yY][eE][sS]|[yY])
-	        main
+	    [nN][oO]|[nN])
 	        ;;
 	    *)
+			main
 	        ;;
 esac
