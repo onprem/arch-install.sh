@@ -198,7 +198,7 @@ function additional {
 	esac
 }
 
-function main {
+function full-installation {
 	set-time
 	partion
 	mounting
@@ -210,6 +210,44 @@ function main {
 	installsteam
 	additional
 	echo "Installation complete. Reboot you lazy bastard."
+}
+
+function step-installation {
+	echo "These steps are available for installion:"
+	echo "1. set-time"
+	echo "2. partioning"
+	echo "3. mounting"
+	echo "4. base installation"
+	echo "5. archroot"
+	echo "6. installing grub"
+	echo "7. installing browsers"
+	echo "8. graphics drivers"
+	echo "9. installing steam"
+	echo "10. additional stuff"
+	read -r -p "Enter the number of step : " stepno
+
+	array=(set-time partion mounting base archroot installgrub browser graphics installsteam additional)
+	#array=(ascii ascii ascii)
+	stepno=$[$stepno-1]
+	while [ $stepno -lt ${#array[*]} ]
+	do
+		${array[$stepno]}
+		stepno=$[$stepno+1]
+	done
+}
+
+function main {
+	echo "1. Start full installation"
+	echo "2. Start from a specific step"
+	read -r -p "What would you like to do? [1/2] " what
+	case "$what" in
+		2)
+			step-installation
+			;;
+		*)
+			full-installation
+			;;
+	esac
 }
 
 ascii
