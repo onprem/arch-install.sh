@@ -113,7 +113,8 @@ function install-deepin {
 
 function install-kde {
 	arch-chroot /mnt bash -c "pacman -S xorg && exit"
-	arch-chroot /mnt bash -c "pacman -S plasma kde-applications sddm && systemctl enable sddm && exit"
+	arch-chroot /mnt bash -c "pacman -S plasma sddm && systemctl enable sddm && exit"
+	arch-chroot /mnt bash -c "pacman -S ark dolphin ffmpegthumbs gwenview kaccounts-integration kate kdialog kio-extras konsole ksystemlog okular print-manager"
 }
 
 function de {
