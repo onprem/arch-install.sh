@@ -171,6 +171,8 @@ function archroot {
 	echo -e "Editing configuration files...\n"
 	# Enabling multilib in pacman
 	arch-chroot /mnt bash -c "sed -i '93s/#\[/\[/' /etc/pacman.conf && sed -i '94s/#I/I/' /etc/pacman.conf && pacman -Syu && sleep 1 && exit"
+	# Tweaking pacman, uncomment options Color, TotalDownload and VerbosePkgList
+	arch-chroot /mnt bash -c "sed -i '34s/#C/C/' /etc/pacman.conf && sed -i '35s/#T/T/' /etc/pacman.conf && sed -i '37s/#V/V/' /etc/pacman.conf && sleep 1 && exit"
 	
 	cont
 }
@@ -196,9 +198,13 @@ function browser {
 	cont
 }
 
-function graphics {
+function install-amd {
+	arch-chroot /mnt bash -c "pacman -Sy mesa lib32-mesa xf86-video-amdgpu vulkan-radeon lib32-vulkan-radeon && exit"
+	arch-chroot /mnt bash -c "pacman -S libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau && exit"
+}
+function install-nvidia {
 	br
-	read -r -p "Do you want proprietary nvidia drivers? " graphic
+	read -r -p "Do you want proprietary nvidia drivers? [y/N] " graphic
 	case "$graphic" in
 	    [yY][eE][sS]|[yY]) 
 	        arch-chroot /mnt bash -c "pacman -Sy nvidia nvidia-settings nvidia-utils lib32-nvidia-utils && exit"
@@ -209,9 +215,27 @@ function graphics {
 	cont
 }
 
+function graphics {
+	br
+	echo -e "Choose Graphic card drivers to install: \n"
+	echo -e "1. AMD \n2. Nvidia \n3. None"
+	read -r -p "Drivers [1/2/3]: " drivere
+	case "$drivere" in
+		1)
+			install-amd
+			;;
+		2)
+			install-nvidia
+			;;
+		*)
+			;;
+	esac
+	cont
+}
+
 function installsteam {
 	br
-	read -r -p "Do you want to install steam? " isteam
+	read -r -p "Do you want to install steam? [y/N] " isteam
 	case "$isteam" in
 	    [yY][eE][sS]|[yY])
 	        arch-chroot /mnt bash -c "pacman -Sy steam lib32-gtk2 lib32-gtk3 lib32-libpulse lib32-libvdpau lib32-libva lib32-libva-vdpau-driver lib32-openal && exit"
@@ -224,7 +248,7 @@ function installsteam {
 
 function additional {
 	br
-	read -r -p "Do you want to install fun stuff? " funyes #because why not
+	read -r -p "Do you want to install fun stuff? [y/N] " funyes #because why not
 	case "$funyes" in
 	    [yY][eE][sS]|[yY])
 	        arch-chroot /mnt bash -c "pacman -S sl neofetch lolcat cmatrix && exit"
