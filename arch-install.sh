@@ -79,7 +79,7 @@ function mounting {
 	        read -r -p "Do you want to format your boot partition? [y/N] " rhome
 			case "$rhome" in
 			    [yY][eE][sS]|[yY])
-			        mkfs.fat -F32 $homep
+			        mkfs.ext4 $homep
 			        ;;
 			    *)
 			        ;;
