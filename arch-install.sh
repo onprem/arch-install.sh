@@ -102,19 +102,21 @@ function base {
 }
 
 function install-gnome {
-	arch-chroot /mnt bash -c "pacman -S gnome gnome-tweaks papirus-icon-theme && systemctl enable gdm && exit"
+	pacstrap /mnt gnome gnome-tweaks papirus-icon-theme
+	arch-chroot /mnt bash -c "systemctl enable gdm && exit"
 	# Editing gdm's config for disabling Wayland as it does not play nicely with Nvidia
 	arch-chroot /mnt bash -c "sed -i 's/#W/W/' /etc/gdm/custom.conf && exit"
 }
 
 function install-deepin {
-	arch-chroot /mnt bash -c "pacman -S deepin gedit && systemctl enable lightdm && exit"
+	pacstrap /mnt deepin lightdm gedit
+	arch-chroot /mnt bash -c "systemctl enable lightdm && exit"
 }
 
 function install-kde {
-	arch-chroot /mnt bash -c "pacman -S xorg && exit"
-	arch-chroot /mnt bash -c "pacman -S plasma sddm && systemctl enable sddm && exit"
-	arch-chroot /mnt bash -c "pacman -S ark dolphin ffmpegthumbs gwenview kaccounts-integration kate kdialog kio-extras konsole ksystemlog okular print-manager"
+	pacstrap /mnt xorg plasma sddm
+	arch-chroot /mnt bash -c "systemctl enable sddm && exit"
+	pacstrap /mnt ark dolphin ffmpegthumbs gwenview kaccounts-integration kate kdialog kio-extras konsole ksystemlog okular print-manager
 }
 
 function de {
@@ -182,7 +184,7 @@ function browser {
 	read -r -p "Install firefox? [y/N] " ff
 	case "$ff" in
 	    [yY][eE][sS]|[yY])
-	        arch-chroot /mnt bash -c "pacman -S firefox && exit"
+			pacstrap /mnt firefox
 	        ;;
 	    *)
 	        ;;
@@ -190,7 +192,7 @@ function browser {
 	read -r -p "Install chromium? [y/N] " chrom
 	case "$chrom" in
 	    [yY][eE][sS]|[yY]) 
-	        arch-chroot /mnt bash -c "pacman -S chromium && exit"
+	        pacstrap /mnt chromium
 	        ;;
 	    *)
 	        ;;
@@ -199,15 +201,15 @@ function browser {
 }
 
 function install-amd {
-	arch-chroot /mnt bash -c "pacman -Sy mesa lib32-mesa xf86-video-amdgpu vulkan-radeon lib32-vulkan-radeon && exit"
-	arch-chroot /mnt bash -c "pacman -S libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau && exit"
+	pacstrap /mnt mesa lib32-mesa xf86-video-amdgpu vulkan-radeon lib32-vulkan-radeon
+	pacstrap /mnt libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau
 }
 function install-nvidia {
 	br
 	read -r -p "Do you want proprietary nvidia drivers? [y/N] " graphic
 	case "$graphic" in
 	    [yY][eE][sS]|[yY]) 
-	        arch-chroot /mnt bash -c "pacman -Sy nvidia nvidia-settings nvidia-utils lib32-nvidia-utils && exit"
+	        pacstrap /mnt nvidia nvidia-settings nvidia-utils lib32-nvidia-utils
 	        ;;
 	    *)
 	        ;;
@@ -238,7 +240,7 @@ function installsteam {
 	read -r -p "Do you want to install steam? [y/N] " isteam
 	case "$isteam" in
 	    [yY][eE][sS]|[yY])
-	        arch-chroot /mnt bash -c "pacman -Sy steam lib32-gtk2 lib32-gtk3 lib32-libpulse lib32-libvdpau lib32-libva lib32-libva-vdpau-driver lib32-openal && exit"
+	        pacstrap /mnt steam lib32-gtk2 lib32-gtk3 lib32-libpulse lib32-libvdpau lib32-libva lib32-libva-vdpau-driver lib32-openal
 	        ;;
 	    *)
 	        ;;
@@ -251,7 +253,7 @@ function additional {
 	read -r -p "Do you want to install fun stuff? [y/N] " funyes #because why not
 	case "$funyes" in
 	    [yY][eE][sS]|[yY])
-	        arch-chroot /mnt bash -c "pacman -S sl neofetch lolcat cmatrix && exit"
+	        pacstrap /mnt sl neofetch lolcat cmatrix
 	        ;;
 	    *)
 	        ;;
