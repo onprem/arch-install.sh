@@ -44,14 +44,14 @@ function partion {
 	br
 	read -r -p "Do you want to do partioning? [y/N] " resp
 	case "$resp" in
-	    [yY][eE][sS]|[yY])
+		[yY][eE][sS]|[yY])
 			echo "gdisk will be used for partioning"
 			read -r -p "which drive you want to partition (exapmle /dev/sda)? " drive
 			# Using gdisk for GPT, if you want to use MBR replace it with fdisk
-	        gdisk $drive
-	        ;;
-	    *)
-	        ;;
+			gdisk $drive
+			;;
+		*)
+			;;
 	esac
 	cont
 }
@@ -65,29 +65,29 @@ function mounting {
 	read -r -p "which is your boot partition? " bootp
 	read -r -p "Do you want to format your boot partition? [y/N] " response
 	case "$response" in
-	    [yY][eE][sS]|[yY])
-	        mkfs.fat -F32 $bootp
-	        ;;
-	    *)
-	        ;;
+		[yY][eE][sS]|[yY])
+			mkfs.fat -F32 $bootp
+			;;
+		*)
+			;;
 	esac
 	mount $bootp /mnt/boot
 	read -r -p "Do you want to use a seperate home partition? [y/N] " responsehome
 	case "$responsehome" in
-	    [yY][eE][sS]|[yY])
-	        read -r -p "which is your home partition? " homep
-	        read -r -p "Do you want to format your boot partition? [y/N] " rhome
+		[yY][eE][sS]|[yY])
+			read -r -p "which is your home partition? " homep
+			read -r -p "Do you want to format your boot partition? [y/N] " rhome
 			case "$rhome" in
-			    [yY][eE][sS]|[yY])
-			        mkfs.ext4 $homep
-			        ;;
-			    *)
-			        ;;
+				[yY][eE][sS]|[yY])
+					mkfs.ext4 $homep
+					;;
+				*)
+					;;
 			esac
 			mount $homep /mnt/home
-	        ;;
-	    *)
-	        ;;
+			;;
+		*)
+			;;
 	esac
 	cont
 }
@@ -142,11 +142,11 @@ function installgrub {
 	read -r -p "Install GRUB bootloader? [y/N] " igrub
 	case "$igrub" in
 		[yY][eE][sS]|[yY])
-	        echo -e "Installing GRUB.."
+			echo -e "Installing GRUB.."
 			arch-chroot /mnt bash -c "grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Arch && grub-mkconfig -o /boot/grub/grub.cfg && exit"
-	        ;;
-	    *)
-	        ;;
+			;;
+		*)
+			;;
 	esac
 	cont
 }
@@ -181,19 +181,19 @@ function browser {
 	br
 	read -r -p "Install firefox? [y/N] " ff
 	case "$ff" in
-	    [yY][eE][sS]|[yY])
-	        arch-chroot /mnt bash -c "pacman -S firefox && exit"
-	        ;;
-	    *)
-	        ;;
+		[yY][eE][sS]|[yY])
+			arch-chroot /mnt bash -c "pacman -S firefox && exit"
+			;;
+		*)
+			;;
 	esac
 	read -r -p "Install chromium? [y/N] " chrom
 	case "$chrom" in
-	    [yY][eE][sS]|[yY])
-	        arch-chroot /mnt bash -c "pacman -S chromium && exit"
-	        ;;
-	    *)
-	        ;;
+		[yY][eE][sS]|[yY])
+			arch-chroot /mnt bash -c "pacman -S chromium && exit"
+			;;
+		*)
+			;;
 	esac
 	cont
 }
@@ -206,11 +206,11 @@ function install-nvidia {
 	br
 	read -r -p "Do you want proprietary nvidia drivers? [y/N] " graphic
 	case "$graphic" in
-	    [yY][eE][sS]|[yY])
-	        arch-chroot /mnt bash -c "pacman -Sy nvidia nvidia-settings nvidia-utils lib32-nvidia-utils && exit"
-	        ;;
-	    *)
-	        ;;
+		[yY][eE][sS]|[yY])
+			arch-chroot /mnt bash -c "pacman -Sy nvidia nvidia-settings nvidia-utils lib32-nvidia-utils && exit"
+			;;
+		*)
+			;;
 	esac
 	cont
 }
@@ -237,11 +237,11 @@ function installsteam {
 	br
 	read -r -p "Do you want to install steam? [y/N] " isteam
 	case "$isteam" in
-	    [yY][eE][sS]|[yY])
-	        arch-chroot /mnt bash -c "pacman -Sy steam lib32-gtk2 lib32-gtk3 lib32-libpulse lib32-libvdpau lib32-libva lib32-libva-vdpau-driver lib32-openal && exit"
-	        ;;
-	    *)
-	        ;;
+		[yY][eE][sS]|[yY])
+			arch-chroot /mnt bash -c "pacman -Sy steam lib32-gtk2 lib32-gtk3 lib32-libpulse lib32-libvdpau lib32-libva lib32-libva-vdpau-driver lib32-openal && exit"
+			;;
+		*)
+			;;
 	esac
 	cont
 }
@@ -250,11 +250,11 @@ function additional {
 	br
 	read -r -p "Do you want to install fun stuff? [y/N] " funyes #because why not
 	case "$funyes" in
-	    [yY][eE][sS]|[yY])
-	        arch-chroot /mnt bash -c "pacman -S sl neofetch lolcat cmatrix && exit"
-	        ;;
-	    *)
-	        ;;
+		[yY][eE][sS]|[yY])
+			arch-chroot /mnt bash -c "pacman -S sl neofetch lolcat cmatrix && exit"
+			;;
+		*)
+			;;
 	esac
 }
 
@@ -315,9 +315,9 @@ function main {
 ascii
 read -r -p "Start Installation? [Y/n] " starti
 case "$starti" in
-	    [nN][oO]|[nN])
-	        ;;
-	    *)
-			main
-	        ;;
+	[nN][oO]|[nN])
+		;;
+	*)
+		main
+		;;
 esac
