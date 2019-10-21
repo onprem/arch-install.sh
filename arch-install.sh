@@ -1,6 +1,6 @@
 #!/bin/bash
-                                                                                                      
-# https://github.com/prmsrswt/arch-install.sh                                                                                                     
+
+# https://github.com/prmsrswt/arch-install.sh
 
 function ascii {
 
@@ -15,9 +15,9 @@ function ascii {
 	echo	'\__|  \__|\__|       \_______|\__|  \__|      \______|\__|  \__|\_______/    \____/  \_______|\__|\__|'
 	echo	'                                                                                                      '
 	echo	'                                                                                                      '
-		                                                                                                      
+
 }
- 
+
 function br {
 	# Just output a bunch of crap, but it looks cool so..
 	for ((i=1; i<=`tput cols`; i++)); do echo -n -; done
@@ -59,7 +59,7 @@ function partion {
 function mounting {
 	br
 	read -r -p "which is your root partition? " rootp
-	mkfs.ext4 $rootp 
+	mkfs.ext4 $rootp
 	mount $rootp /mnt
 	mkdir /mnt/boot
 	read -r -p "which is your boot partition? " bootp
@@ -158,22 +158,22 @@ function archroot {
 
 	echo -e "Setting up Region and Language\n"
 	arch-chroot /mnt bash -c "ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && hwclock --systohc && sed -i 's/#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen && locale-gen && echo 'LANG=en_US.UTF-8' > /etc/locale.conf && exit"
-	
+
 	echo -e "Setting up Hostname\n"
 	arch-chroot /mnt bash -c "echo $hname > /etc/hostname && echo 127.0.0.1	$hname > /etc/hosts && echo ::1	$hname >> /etc/hosts && echo 127.0.1.1	$hname.localdomain	$hname >> /etc/hosts && exit"
-	
+
 	echo "Set Root password"
 	arch-chroot /mnt bash -c "passwd && useradd --create-home $uname && echo 'set user password' && passwd $uname && groupadd sudo && gpasswd -a $uname sudo && EDITOR=vim visudo && exit"
-	
+
 	echo -e "enabling services...\n"
 	arch-chroot /mnt bash -c "systemctl enable NetworkManager bluetooth && exit"
-	
+
 	echo -e "Editing configuration files...\n"
 	# Enabling multilib in pacman
 	arch-chroot /mnt bash -c "sed -i '93s/#\[/\[/' /etc/pacman.conf && sed -i '94s/#I/I/' /etc/pacman.conf && pacman -Syu && sleep 1 && exit"
 	# Tweaking pacman, uncomment options Color, TotalDownload and VerbosePkgList
 	arch-chroot /mnt bash -c "sed -i '34s/#C/C/' /etc/pacman.conf && sed -i '35s/#T/T/' /etc/pacman.conf && sed -i '37s/#V/V/' /etc/pacman.conf && sleep 1 && exit"
-	
+
 	cont
 }
 
@@ -189,7 +189,7 @@ function browser {
 	esac
 	read -r -p "Install chromium? [y/N] " chrom
 	case "$chrom" in
-	    [yY][eE][sS]|[yY]) 
+	    [yY][eE][sS]|[yY])
 	        arch-chroot /mnt bash -c "pacman -S chromium && exit"
 	        ;;
 	    *)
@@ -206,7 +206,7 @@ function install-nvidia {
 	br
 	read -r -p "Do you want proprietary nvidia drivers? [y/N] " graphic
 	case "$graphic" in
-	    [yY][eE][sS]|[yY]) 
+	    [yY][eE][sS]|[yY])
 	        arch-chroot /mnt bash -c "pacman -Sy nvidia nvidia-settings nvidia-utils lib32-nvidia-utils && exit"
 	        ;;
 	    *)
