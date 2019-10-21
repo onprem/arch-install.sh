@@ -96,7 +96,35 @@ function base {
 	br
 	echo "Starting installation of packages in selected root drive..."
 	sleep 1
-	pacstrap /mnt base base-devel networkmanager sudo bash-completion git vim exfat-utils ntfs-3g grub os-prober efibootmgr htop vlc ttf-hack
+	pacstrap /mnt \
+        base \
+        diffutils \
+        e2fsprogs \
+        inetutils \
+        less \
+        linux \
+        linux-firmware \
+        logrotate \
+        man-db \
+        man-pages \
+        nano \
+        texinfo \
+        usbutils \
+        which \
+        base-devel \
+        networkmanager \
+        sudo \
+        bash-completion \
+        git \
+        vim \
+        exfat-utils \
+        ntfs-3g \
+        grub \
+        os-prober \
+        efibootmgr \
+        htop \
+        vlc \
+        ttf-hack
 	genfstab -U /mnt >> /mnt/etc/fstab
 	cont
 }
