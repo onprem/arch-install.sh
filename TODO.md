@@ -6,3 +6,4 @@
 - [ ] Automate editing /etc/sudoers
 - [ ] Install pulseaudio-alsa, pulseaudio-bluetooth
 - [ ] Install `dnsmasq` for HotSpot creation
+- [x] Use `pacstrap` instead of pacman in various places
