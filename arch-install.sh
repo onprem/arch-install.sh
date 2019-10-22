@@ -124,6 +124,7 @@ function base {
         efibootmgr \
         htop \
         vlc \
+	pacman-contrib \
         ttf-hack
 	genfstab -U /mnt >> /mnt/etc/fstab
 	cont
@@ -197,6 +198,9 @@ function archroot {
 
 	echo -e "enabling services...\n"
 	arch-chroot /mnt bash -c "systemctl enable NetworkManager bluetooth && exit"
+	
+	echo -e "enabling paccache timer...\n"
+	arch-chroot /mnt bash -c "systemctl enable paccache.timer && exit"
 
 	echo -e "Editing configuration files...\n"
 	# Enabling multilib in pacman
