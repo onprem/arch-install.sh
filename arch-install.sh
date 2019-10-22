@@ -1,6 +1,6 @@
 #!/bin/bash
-                                                                                                      
-# https://github.com/prmsrswt/arch-install.sh                                                                                                     
+
+# https://github.com/prmsrswt/arch-install.sh
 
 function ascii {
 
@@ -15,9 +15,9 @@ function ascii {
 	echo	'\__|  \__|\__|       \_______|\__|  \__|      \______|\__|  \__|\_______/    \____/  \_______|\__|\__|'
 	echo	'                                                                                                      '
 	echo	'                                                                                                      '
-		                                                                                                      
+
 }
- 
+
 function br {
 	# Just output a bunch of crap, but it looks cool so..
 	for ((i=1; i<=`tput cols`; i++)); do echo -n -; done
@@ -44,14 +44,14 @@ function partion {
 	br
 	read -r -p "Do you want to do partioning? [y/N] " resp
 	case "$resp" in
-	    [yY][eE][sS]|[yY])
+		[yY][eE][sS]|[yY])
 			echo "gdisk will be used for partioning"
 			read -r -p "which drive you want to partition (exapmle /dev/sda)? " drive
 			# Using gdisk for GPT, if you want to use MBR replace it with fdisk
-	        gdisk $drive
-	        ;;
-	    *)
-	        ;;
+			gdisk $drive
+			;;
+		*)
+			;;
 	esac
 	cont
 }
@@ -59,35 +59,35 @@ function partion {
 function mounting {
 	br
 	read -r -p "which is your root partition? " rootp
-	mkfs.ext4 $rootp 
+	mkfs.ext4 $rootp
 	mount $rootp /mnt
 	mkdir /mnt/boot
 	read -r -p "which is your boot partition? " bootp
 	read -r -p "Do you want to format your boot partition? [y/N] " response
 	case "$response" in
-	    [yY][eE][sS]|[yY])
-	        mkfs.fat -F32 $bootp
-	        ;;
-	    *)
-	        ;;
+		[yY][eE][sS]|[yY])
+			mkfs.fat -F32 $bootp
+			;;
+		*)
+			;;
 	esac
 	mount $bootp /mnt/boot
 	read -r -p "Do you want to use a seperate home partition? [y/N] " responsehome
 	case "$responsehome" in
-	    [yY][eE][sS]|[yY])
-	        read -r -p "which is your home partition? " homep
-	        read -r -p "Do you want to format your boot partition? [y/N] " rhome
+		[yY][eE][sS]|[yY])
+			read -r -p "which is your home partition? " homep
+			read -r -p "Do you want to format your boot partition? [y/N] " rhome
 			case "$rhome" in
-			    [yY][eE][sS]|[yY])
-			        mkfs.ext4 $homep
-			        ;;
-			    *)
-			        ;;
+				[yY][eE][sS]|[yY])
+					mkfs.ext4 $homep
+					;;
+				*)
+					;;
 			esac
 			mount $homep /mnt/home
-	        ;;
-	    *)
-	        ;;
+			;;
+		*)
+			;;
 	esac
 	cont
 }
@@ -96,7 +96,35 @@ function base {
 	br
 	echo "Starting installation of packages in selected root drive..."
 	sleep 1
-	pacstrap /mnt base base-devel networkmanager sudo bash-completion git vim exfat-utils ntfs-3g grub os-prober efibootmgr htop vlc ttf-hack
+	pacstrap /mnt \
+        base \
+        diffutils \
+        e2fsprogs \
+        inetutils \
+        less \
+        linux \
+        linux-firmware \
+        logrotate \
+        man-db \
+        man-pages \
+        nano \
+        texinfo \
+        usbutils \
+        which \
+        base-devel \
+        networkmanager \
+        sudo \
+        bash-completion \
+        git \
+        vim \
+        exfat-utils \
+        ntfs-3g \
+        grub \
+        os-prober \
+        efibootmgr \
+        htop \
+        vlc \
+        ttf-hack
 	genfstab -U /mnt >> /mnt/etc/fstab
 	cont
 }
@@ -142,11 +170,11 @@ function installgrub {
 	read -r -p "Install GRUB bootloader? [y/N] " igrub
 	case "$igrub" in
 		[yY][eE][sS]|[yY])
-	        echo -e "Installing GRUB.."
+			echo -e "Installing GRUB.."
 			arch-chroot /mnt bash -c "grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Arch && grub-mkconfig -o /boot/grub/grub.cfg && exit"
-	        ;;
-	    *)
-	        ;;
+			;;
+		*)
+			;;
 	esac
 	cont
 }
@@ -158,22 +186,22 @@ function archroot {
 
 	echo -e "Setting up Region and Language\n"
 	arch-chroot /mnt bash -c "ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && hwclock --systohc && sed -i 's/#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen && locale-gen && echo 'LANG=en_US.UTF-8' > /etc/locale.conf && exit"
-	
+
 	echo -e "Setting up Hostname\n"
 	arch-chroot /mnt bash -c "echo $hname > /etc/hostname && echo 127.0.0.1	$hname > /etc/hosts && echo ::1	$hname >> /etc/hosts && echo 127.0.1.1	$hname.localdomain	$hname >> /etc/hosts && exit"
-	
+
 	echo "Set Root password"
 	arch-chroot /mnt bash -c "passwd && useradd --create-home $uname && echo 'set user password' && passwd $uname && groupadd sudo && gpasswd -a $uname sudo && EDITOR=vim visudo && exit"
-	
+
 	echo -e "enabling services...\n"
 	arch-chroot /mnt bash -c "systemctl enable NetworkManager bluetooth && exit"
-	
+
 	echo -e "Editing configuration files...\n"
 	# Enabling multilib in pacman
 	arch-chroot /mnt bash -c "sed -i '93s/#\[/\[/' /etc/pacman.conf && sed -i '94s/#I/I/' /etc/pacman.conf && pacman -Syu && sleep 1 && exit"
 	# Tweaking pacman, uncomment options Color, TotalDownload and VerbosePkgList
 	arch-chroot /mnt bash -c "sed -i '34s/#C/C/' /etc/pacman.conf && sed -i '35s/#T/T/' /etc/pacman.conf && sed -i '37s/#V/V/' /etc/pacman.conf && sleep 1 && exit"
-	
+
 	cont
 }
 
@@ -181,19 +209,19 @@ function browser {
 	br
 	read -r -p "Install firefox? [y/N] " ff
 	case "$ff" in
-	    [yY][eE][sS]|[yY])
-	        arch-chroot /mnt bash -c "pacman -S firefox && exit"
-	        ;;
-	    *)
-	        ;;
+		[yY][eE][sS]|[yY])
+			arch-chroot /mnt bash -c "pacman -S firefox && exit"
+			;;
+		*)
+			;;
 	esac
 	read -r -p "Install chromium? [y/N] " chrom
 	case "$chrom" in
-	    [yY][eE][sS]|[yY]) 
-	        arch-chroot /mnt bash -c "pacman -S chromium && exit"
-	        ;;
-	    *)
-	        ;;
+		[yY][eE][sS]|[yY])
+			arch-chroot /mnt bash -c "pacman -S chromium && exit"
+			;;
+		*)
+			;;
 	esac
 	cont
 }
@@ -206,11 +234,11 @@ function install-nvidia {
 	br
 	read -r -p "Do you want proprietary nvidia drivers? [y/N] " graphic
 	case "$graphic" in
-	    [yY][eE][sS]|[yY]) 
-	        arch-chroot /mnt bash -c "pacman -Sy nvidia nvidia-settings nvidia-utils lib32-nvidia-utils && exit"
-	        ;;
-	    *)
-	        ;;
+		[yY][eE][sS]|[yY])
+			arch-chroot /mnt bash -c "pacman -Sy nvidia nvidia-settings nvidia-utils lib32-nvidia-utils && exit"
+			;;
+		*)
+			;;
 	esac
 	cont
 }
@@ -237,11 +265,11 @@ function installsteam {
 	br
 	read -r -p "Do you want to install steam? [y/N] " isteam
 	case "$isteam" in
-	    [yY][eE][sS]|[yY])
-	        arch-chroot /mnt bash -c "pacman -Sy steam lib32-gtk2 lib32-gtk3 lib32-libpulse lib32-libvdpau lib32-libva lib32-libva-vdpau-driver lib32-openal && exit"
-	        ;;
-	    *)
-	        ;;
+		[yY][eE][sS]|[yY])
+			arch-chroot /mnt bash -c "pacman -Sy steam lib32-gtk2 lib32-gtk3 lib32-libpulse lib32-libvdpau lib32-libva lib32-libva-vdpau-driver lib32-openal && exit"
+			;;
+		*)
+			;;
 	esac
 	cont
 }
@@ -250,11 +278,11 @@ function additional {
 	br
 	read -r -p "Do you want to install fun stuff? [y/N] " funyes #because why not
 	case "$funyes" in
-	    [yY][eE][sS]|[yY])
-	        arch-chroot /mnt bash -c "pacman -S sl neofetch lolcat cmatrix && exit"
-	        ;;
-	    *)
-	        ;;
+		[yY][eE][sS]|[yY])
+			arch-chroot /mnt bash -c "pacman -S sl neofetch lolcat cmatrix && exit"
+			;;
+		*)
+			;;
 	esac
 }
 
@@ -315,9 +343,9 @@ function main {
 ascii
 read -r -p "Start Installation? [Y/n] " starti
 case "$starti" in
-	    [nN][oO]|[nN])
-	        ;;
-	    *)
-			main
-	        ;;
+	[nN][oO]|[nN])
+		;;
+	*)
+		main
+		;;
 esac
