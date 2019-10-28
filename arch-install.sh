@@ -197,7 +197,8 @@ function archroot {
 	arch-chroot /mnt bash -c "passwd && useradd --create-home $uname && echo 'set user password' && passwd $uname && groupadd sudo && gpasswd -a $uname sudo && EDITOR=vim visudo && exit"
 
 	echo -e "enabling services...\n"
-	arch-chroot /mnt bash -c "systemctl enable NetworkManager bluetooth && exit"
+	arch-chroot /mnt bash -c "systemctl enable bluetooth && exit"
+	arch-chroot /mnt bash -c "systemctl enable NetworkManager && exit"
 	
 	echo -e "enabling paccache timer...\n"
 	arch-chroot /mnt bash -c "systemctl enable paccache.timer && exit"
