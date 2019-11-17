@@ -76,7 +76,7 @@ function mounting {
 	case "$responsehome" in
 		[yY][eE][sS]|[yY])
 			read -r -p "which is your home partition? " homep
-			read -r -p "Do you want to format your boot partition? [y/N] " rhome
+			read -r -p "Do you want to format your home partition? [y/N] " rhome
 			case "$rhome" in
 				[yY][eE][sS]|[yY])
 					mkfs.ext4 $homep
@@ -97,35 +97,35 @@ function base {
 	echo "Starting installation of packages in selected root drive..."
 	sleep 1
 	pacstrap /mnt \
-        base \
-        diffutils \
-        e2fsprogs \
-        inetutils \
-        less \
-        linux \
-        linux-firmware \
-        logrotate \
-        man-db \
-        man-pages \
-        nano \
-        texinfo \
-        usbutils \
-        which \
-        base-devel \
-        networkmanager \
-        sudo \
-        bash-completion \
-        git \
-        vim \
-        exfat-utils \
-        ntfs-3g \
-        grub \
-        os-prober \
-        efibootmgr \
-        htop \
-        vlc \
-	pacman-contrib \
-        ttf-hack
+				base \
+				diffutils \
+				e2fsprogs \
+				inetutils \
+				less \
+				linux \
+				linux-firmware \
+				logrotate \
+				man-db \
+				man-pages \
+				nano \
+				texinfo \
+				usbutils \
+				which \
+				base-devel \
+				networkmanager \
+				sudo \
+				bash-completion \
+				git \
+				vim \
+				exfat-utils \
+				ntfs-3g \
+				grub \
+				os-prober \
+				efibootmgr \
+				htop \
+				vlc \
+				pacman-contrib \
+				ttf-hack
 	genfstab -U /mnt >> /mnt/etc/fstab
 	cont
 }
@@ -273,7 +273,7 @@ function installsteam {
 	read -r -p "Do you want to install steam? [y/N] " isteam
 	case "$isteam" in
 		[yY][eE][sS]|[yY])
-			pacstrap /mnt steam lib32-gtk2 lib32-gtk3 lib32-libpulse lib32-libvdpau lib32-libva lib32-libva-vdpau-driver lib32-openal
+			pacstrap /mnt steam steam-native-runtime
 			;;
 		*)
 			;;
@@ -283,7 +283,7 @@ function installsteam {
 
 function additional {
 	br
-	read -r -p "Do you want to install fun stuff? [y/N] " funyes #because why not
+	read -r -p "Do you want to install fun stuff? [y/N] " funyes # because why not
 	case "$funyes" in
 		[yY][eE][sS]|[yY])
 			pacstrap /mnt sl neofetch lolcat cmatrix
